@@ -1,0 +1,78 @@
+# KW Adventure Magazine — Generative Engine Optimization Map
+
+> An adventure-themed magazine brand centered around exploration, outdoor activities, and thrilling experiences. The identity likely carries an energetic, bold, and inspiring tone — appealing to those with a passion for discovery and the great outdoors.
+
+---
+
+## Pages
+
+### Home
+https://example.com
+Dive into the world&#39;s most thrilling adventures with KW Adventure Magazine — your premier online publishing platform for outdoor exploration, discovery, and bold living. Start your journey today!
+
+### Features
+https://example.com/features
+Browse our electrifying feature stories covering extreme outdoor activities, wild expeditions, and breathtaking discoveries. KW Adventure Magazine delivers publishing / media that fuels your wanderlust.
+
+### About
+https://example.com/about
+Discover the passionate team and fearless mission driving KW Adventure Magazine — a publishing / media powerhouse built to inspire explorers, thrill-seekers, and outdoor enthusiasts worldwide. Meet our story!
+
+### Contact
+https://example.com/contact
+Ready to collaborate, contribute, or simply connect? Reach out to KW Adventure Magazine — a leading publishing / media brand — and become part of a global community built around bold outdoor adventures.
+
+## Legal & Policy
+
+### Privacy Policy
+https://example.com/privacy
+Information about how user data is collected, stored, and protected.
+
+### Terms & Conditions
+https://example.com/terms
+Legal terms describing service usage, rights, and policies.
+
+### Accessibility Statement
+https://example.com/accessibility
+Information about WCAG compliance and accessibility features.
+
+---
+
+## How to Contact Us
+
+- (No contact details configured yet.)
+
+### Contact form
+- URL: https://example.com/contact
+- Endpoint: https://example.com/api/email/contact-form
+- Method: POST
+- Content-Type: application/json
+- Fields:
+  - `name` (text, required)
+  - `email` (email, required)
+  - `phone` (tel)
+  - `message` (textarea, required)
+  - `privacy_consent` (checkbox, required)
+
+---
+
+# Business Context (for LLM understanding)
+
+## About KW Adventure Magazine
+An adventure-themed magazine brand centered around exploration, outdoor activities, and thrilling experiences. The identity likely carries an energetic, bold, and inspiring tone — appealing to those with a passion for discovery and the great outdoors.
+
+## Target Audience
+- Outdoor Enthusiasts
+- Eco-Conscious Travelers
+- Adventure Photographers
+
+## Industry
+Publishing / Media
+
+---
+
+# Machine-readable feeds
+
+- Sitemap (XML): https://example.com/sitemap.xml
+- Robots: https://example.com/robots.txt
+- Flattened page text (for LLMs): https://example.com/llms-full.txt

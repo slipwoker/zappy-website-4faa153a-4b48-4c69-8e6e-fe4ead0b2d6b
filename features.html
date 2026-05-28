@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+    <title>Unleash Epic Adventure Content &amp; Stories — KW Adventure Magazine</title>
+    <meta name="description" content="Browse our electrifying feature stories covering extreme outdoor activities, wild expeditions, and breathtaking discoveries. KW Adventure Magazine delivers publishing / media that fuels your wanderlust.">
+    <meta name="keywords" content="adventure features, publishing / media, outdoor activities content, expedition stories, thrilling experiences">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon-512x512.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <!-- Zappy Analytics -->
+<script>
+(function() {
+  'use strict';
+  
+  // Configuration
+  var config = {
+    websiteId: '4faa153a-4b48-4c69-8e6e-fe4ead0b2d6b',
+    apiUrl: 'https://api.zappy5.com/api/analytics/track',
+    sessionDuration: 30 * 60 * 1000, // 30 minutes
+    visitorDuration: 30 * 24 * 60 * 60 * 1000, // 30 days
+    trackPageViews: true,
+    trackClicks: true,
+    trackFormSubmissions: true
+  };
+  
+  // Generate or retrieve persistent visitor ID (30 days)
+  function getVisitorId() {
+    var visitorKey = 'zappy_visitor_' + config.websiteId;
+    var visitor = null;
+    
+    try {
+      visitor = localStorage.getItem(visitorKey);
+      if (visitor) {
+        var visitorData = JSON.parse(visitor);
+        var now = Date.now();
+        
+        // Check if visitor ID is still valid (30 days)
+        if (now - visitorData.created < config.visitorDuration) {
+          // Update last seen timestamp
+          visitorData.lastSeen = now;
+          localStorage.setItem(visitorKey, JSON.stringify(visitorData));
+          return visitorData.id;
+        }
+      }
+    } catch (e) {
+      console.warn('Zappy Analytics: LocalStorage not available');
+    }
+    
+    // Generate new visitor ID
+    var newVisitorId = 'zv_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    try {
+      localStorage.setItem(visitorKey, JSON.stringify({
+        id: newVisitorId,
+        created: Date.now(),
+        lastSeen: Date.now()
+      }));
+    } catch (e) {
+      // Continue without local storage
+    }
+    
+    return newVisitorId;
+  }
+  
+  // Generate or retrieve session ID (30 minutes)
+  function getSessionId() {
+    var sessionKey = 'zappy_session_' + config.websiteId;
+    var session = null;
+    
+    try {
+      session = sessionStorage.getItem(sessionKey);
+      if (session) {
+        var sessionData = JSON.parse(session);
+        var now = Date.now();
+        
+        // Check if session is still valid
+        if (now - sessionData.timestamp < config.sessionDuration) {
+          // Update timestamp
+          sessionData.timestamp = now;
+          sessionStorage.setItem(sessionKey, JSON.stringify(sessionData));
+          return sessionData.id;
+        }
+      }
+    } catch (e) {
+      console.warn('Zappy Analytics: SessionStorage not available');
+    }
+    
+    // Generate new session ID
+    var newSessionId = 'zs_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    try {
+      sessionStorage.setItem(sessionKey, JSON.stringify({
+        id: newSessionId,
+        timestamp: Date.now()
+      }));
+    } catch (e) {
+      // Continue without session storage
+    }
+    
+    return newSessionId;
+  }
+  
+  var visitorId = getVisitorId();
+  var sessionId = getSessionId();
+  
+  // Track an event
+  function trackEvent(eventType, data) {
+    data = data || {};
+    
+    var eventData = {
+      website_id: config.websiteId,
+      event_type: eventType,
+      page_path: window.location.pathname,
+      referrer: document.referrer || 'direct',
+      visitor_id: visitorId,
+      session_id: sessionId,
+      metadata: data
+    };
+    
+    // Use sendBeacon if available (better for page unload events)
+    if (navigator.sendBeacon) {
+      var blob = new Blob([JSON.stringify(eventData)], { type: 'application/json' });
+      navigator.sendBeacon(config.apiUrl, blob);
+    } else {
+      // Fallback to fetch
+      fetch(config.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(eventData),
+        keepalive: true
+      }).catch(function(error) {
+        console.warn('Zappy Analytics: Failed to track event', error);
+      });
+    }
+  }
+  
+  // Track page view
+  if (config.trackPageViews) {
+    trackEvent('pageview', {
+      title: document.title,
+      url: window.location.href
+    });
+  }
+  
+  // Track clicks on important elements
+  if (config.trackClicks) {
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+      
+      // Track button clicks (counted as actions)
+      if (target.tagName === 'BUTTON' || target.closest('button')) {
+        var button = target.tagName === 'BUTTON' ? target : target.closest('button');
+        trackEvent('click', {
+          element: 'button',
+          text: button.textContent.trim().substring(0, 100),
+          id: button.id || null,
+          class: button.className || null
+        });
+      }
+      
+      // Track link clicks (navigation - not counted as actions)
+      else if (target.tagName === 'A' || target.closest('a')) {
+        var link = target.tagName === 'A' ? target : target.closest('a');
+        trackEvent('navigation', {
+          element: 'link',
+          text: link.textContent.trim().substring(0, 100),
+          href: link.href,
+          external: link.hostname !== window.location.hostname
+        });
+      }
+    }, true);
+  }
+  
+  // Track form submissions
+  if (config.trackFormSubmissions) {
+    document.addEventListener('submit', function(e) {
+      var form = e.target;
+      
+      trackEvent('form_submit', {
+        form_id: form.id || null,
+        form_name: form.name || null,
+        form_action: form.action || null,
+        form_method: form.method || 'GET'
+      });
+    }, true);
+  }
+  
+  // Track time on page (send on page unload)
+  var pageLoadTime = Date.now();
+  
+  window.addEventListener('beforeunload', function() {
+    var timeOnPage = Math.floor((Date.now() - pageLoadTime) / 1000); // in seconds
+    
+    trackEvent('page_unload', {
+      time_on_page: timeOnPage,
+      page_path: window.location.pathname
+    });
+  });
+  
+  // Expose tracking function globally for custom events
+  window.zappyAnalytics = {
+    track: trackEvent,
+    getVisitorId: function() { return visitorId; },
+    getSessionId: function() { return sessionId; }
+  };
+  
+})();
+</script>
+<!-- End Zappy Analytics -->
+    <meta property="og:title" content="Unleash Epic Adventure Content &amp; Stories — KW Adventure Magazine">
+    <meta property="og:description" content="Browse our electrifying feature stories covering extreme outdoor activities, wild expeditions, and breathtaking discoveries. KW Adventure Magazine delivers publishing / media that fuels your wanderlust.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Unleash Epic Adventure Content &amp; Stories — KW Adventure Magazine">
+    <meta name="twitter:description" content="Browse our electrifying feature stories covering extreme outdoor activities, wild expeditions, and breathtaking discoveries. KW Adventure Magazine delivers publishing / media that fuels your wanderlust.">
+    <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .skip-link { position: absolute; top: 0; left: 0; transform: translateY(-200%); padding: 12px 18px; background: var(--bg-dark, #1a1a1a); color: var(--text-light, #fff); font-weight: 600; border-radius: 0 0 8px 0; z-index: 10000; }
+    .skip-link:focus { transform: none; outline: 2px solid var(--ring, #fff); outline-offset: 2px; }
+    :focus-visible { outline: 2px solid var(--ring, currentColor); outline-offset: 3px; }
+  </style>
+
+
+  
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon-512x512.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <!-- Cookie Consent -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.css">
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.umd.js"></script>
+    <!-- Mickidum Accessibility Toolbar -->
+    <script src="https://cdn.jsdelivr.net/gh/mickidum/acc_toolbar/acctoolbar/acctoolbar.min.js"></script>
+    <link rel="stylesheet" href="/styles.css">
+    <script>window.ZAPPY_WEBSITE_ID = "4faa153a-4b48-4c69-8e6e-fe4ead0b2d6b"; window.ZAPPY_API_BASE = "https://api.zappy5.com";</script>
+
+    <style id="zappy-dropdown-submenu-styles">
+      /* ========== DESKTOP DROPDOWN SUBMENU STYLES ========== */
+      /* Base styles for dropdown submenus - parent must be positioned */
+      .nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu) { position: relative; }
+      /* Submenu base - hidden by default */
+      .nav-menu .sub-menu, nav .sub-menu, .navbar .sub-menu, #navMenu .sub-menu { display: block !important; position: absolute !important; top: 100%; left: 0; min-width: 220px; background: white; border-radius: 8px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); padding: 8px 0; opacity: 0; visibility: hidden; transform: translateY(10px); transition: all 0.3s ease; z-index: 1000; list-style: none; pointer-events: none; }
+      /* CRITICAL: Desktop hover styles to show dropdown */
+      .nav-menu li:hover > .sub-menu, nav li:hover > .sub-menu, .navbar li:hover > .sub-menu, #navMenu li:hover > .sub-menu { opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important; pointer-events: auto !important; }
+      /* Submenu item styling */
+      .sub-menu li { list-style: none; margin: 0; padding: 0; }
+      .sub-menu a { display: block !important; padding: 10px 16px !important; color: var(--text-dark, #333) !important; font-weight: 500; text-decoration: none; white-space: nowrap; transition: background-color 0.2s; }
+      .sub-menu .zappy-nav-child > a { padding-left: 28px !important; font-size: 0.9em !important; opacity: 0.85 !important; }
+      [dir="rtl"] .sub-menu .zappy-nav-child > a, html[lang="he"] .sub-menu .zappy-nav-child > a, html[lang="ar"] .sub-menu .zappy-nav-child > a { padding-left: 10px !important; padding-right: 28px !important; }
+      .sub-menu .zappy-nav-parent > a { font-weight: 600 !important; }
+      .sub-menu a:hover { background-color: #f5f5f5; }
+      /* RTL (Hebrew/Arabic) dropdown positioning */
+      [dir="rtl"] .nav-menu .sub-menu, [dir="rtl"] nav .sub-menu, [dir="rtl"] .navbar .sub-menu, html[lang="he"] .nav-menu .sub-menu, html[lang="he"] nav .sub-menu, html[lang="he"] .navbar .sub-menu, html[lang="ar"] .nav-menu .sub-menu, html[lang="ar"] nav .sub-menu, html[lang="ar"] .navbar .sub-menu { left: auto !important; right: 0 !important; }
+      /* Hide empty dropdown menus (exclude catalog sub-menus that use <a> children instead of <li>) */
+      .sub-menu:empty, .sub-menu:not(:has(li:not(.zappy-hidden-menu-item))):not(:has(> a)), .sub-menu:not(:has(li)):not(:has(> a)) { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
+      /* Desktop: show submenu on Menu Group hover */
+      li:has(.menu-group-title):hover > .sub-menu { opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important; pointer-events: auto !important; }
+      /* Menu Group title styling */
+      .nav-menu > li > .menu-group-title, #navMenu > li > .menu-group-title { display: inline-block; padding: 0.5rem 1rem; cursor: default; user-select: none; }
+      
+      /* ========== MOBILE SUBMENU STYLES ========== */
+      @media (max-width: 768px) {
+        .nav-menu .sub-menu, nav .sub-menu, .navbar .sub-menu, #navMenu .sub-menu { position: static !important; transform: none !important; box-shadow: none !important; background: transparent !important; max-height: 0; overflow: hidden; opacity: 0; visibility: hidden; transition: max-height 0.3s ease, opacity 0.3s ease; padding: 0 !important; border-radius: 0 !important; }
+        .navbar .sub-menu.mobile-expanded, .nav-menu .sub-menu.mobile-expanded, #navMenu .sub-menu.mobile-expanded { max-height: none !important; overflow-y: visible !important; opacity: 1 !important; visibility: visible !important; padding: 8px 0 8px 16px !important; }
+        [dir="rtl"] .sub-menu.mobile-expanded, html[lang="he"] .sub-menu.mobile-expanded { padding: 8px 16px 8px 0 !important; }
+        /* Disable hover behavior on mobile */
+        .nav-menu li:hover > .sub-menu, nav li:hover > .sub-menu, .navbar li:hover > .sub-menu, #navMenu li:hover > .sub-menu { opacity: 0; visibility: hidden; pointer-events: none; }
+        .nav-menu li > .sub-menu.mobile-expanded, nav li > .sub-menu.mobile-expanded, .navbar li > .sub-menu.mobile-expanded, #navMenu li > .sub-menu.mobile-expanded { opacity: 1 !important; visibility: visible !important; pointer-events: auto !important; }
+        .nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu) { display: flex !important; flex-wrap: wrap !important; align-items: center !important; position: relative !important; min-height: 44px !important; }
+        .nav-menu li:has(.sub-menu) > a, nav li:has(.sub-menu) > a, .navbar li:has(.sub-menu) > a, #navMenu li:has(.sub-menu) > a { flex: 1 !important; min-width: 0 !important; }
+        .nav-menu li:has(.sub-menu) > .menu-group-title, nav li:has(.sub-menu) > .menu-group-title, .navbar li:has(.sub-menu) > .menu-group-title, #navMenu li:has(.sub-menu) > .menu-group-title { flex: 1 !important; min-width: 0 !important; padding: 0 !important; line-height: inherit !important; }
+        .nav-menu li:has(.sub-menu) > .sub-menu, nav li:has(.sub-menu) > .sub-menu, .navbar li:has(.sub-menu) > .sub-menu, #navMenu li:has(.sub-menu) > .sub-menu { flex-basis: 100% !important; width: 100% !important; }
+        .nav-menu li:has(.sub-menu) > a [class*="chevron"], .nav-menu li:has(.sub-menu) > a [class*="arrow"], .nav-menu li:has(.sub-menu) > a .fa-chevron-down, .nav-menu li:has(.sub-menu) > a .fa-angle-down, nav li:has(.sub-menu) > a [class*="chevron"], nav li:has(.sub-menu) > a [class*="arrow"], #navMenu li:has(.sub-menu) > a [class*="chevron"], #navMenu li:has(.sub-menu) > a [class*="arrow"] { display: none !important; visibility: hidden !important; }
+        .mobile-submenu-toggle { display: flex !important; align-items: center !important; justify-content: center !important; width: 44px !important; height: auto !important; background: transparent !important; border: none !important; cursor: pointer !important; color: var(--text-dark) !important; position: static !important; flex-shrink: 0 !important; align-self: stretch !important; z-index: 2 !important; padding: 0 !important; margin: 0 !important; }
+        .mobile-submenu-toggle::after { content: '' !important; width: 0 !important; height: 0 !important; border-left: 6px solid transparent !important; border-right: 6px solid transparent !important; border-top: 7px solid currentColor !important; transition: transform 0.3s ease !important; }
+        .mobile-submenu-toggle.expanded::after { transform: rotate(180deg) !important; }
+        .sub-menu a { padding: 10px 0 !important; display: block !important; color: var(--text-dark) !important; white-space: normal !important; }
+        .sub-menu .zappy-nav-child > a { padding-left: 28px !important; font-size: 0.9em !important; opacity: 0.85 !important; }
+        [dir="rtl"] .sub-menu .zappy-nav-child > a, html[lang="he"] .sub-menu .zappy-nav-child > a, html[lang="ar"] .sub-menu .zappy-nav-child > a { padding-left: 0 !important; padding-right: 28px !important; }
+        .sub-menu .zappy-nav-parent > a { font-weight: 600 !important; }
+        .nav-menu.active, #navMenu.active { max-width: 100vw !important; overflow-x: hidden !important; box-sizing: border-box !important; }
+        .navbar .sub-menu li a, nav.navbar .sub-menu li a, .zappy-products-dropdown .sub-menu a { color: var(--text-dark) !important; }
+      }
+      @media (min-width: 769px) { .mobile-submenu-toggle { display: none !important; } }
+    </style>
+
+    <style id="zappy-widget-visibility">
+      html[dir="rtl"] .whatsapp-float { right: 20px !important; left: auto !important; }
+      html[dir="ltr"] .whatsapp-float, html:not([dir]) .whatsapp-float { left: 20px !important; right: auto !important; }
+      html[dir="rtl"] #mic-access-tool-general-button, html[dir="rtl"] .mic-access-tool-general-button,
+      html[dir="rtl"] #mic-init-access-tool .mic-access-tool-general-button,
+      html[dir="rtl"] #mic-init-access-tool #mic-access-tool-general-button,
+      html[dir="rtl"] ._access-icon { left: 20px !important; right: auto !important; }
+      html[dir="ltr"] #mic-access-tool-general-button, html[dir="ltr"] .mic-access-tool-general-button,
+      html[dir="ltr"] #mic-init-access-tool .mic-access-tool-general-button,
+      html[dir="ltr"] #mic-init-access-tool #mic-access-tool-general-button,
+      html[dir="ltr"] ._access-icon,
+      html:not([dir]) #mic-access-tool-general-button, html:not([dir]) .mic-access-tool-general-button,
+      html:not([dir]) #mic-init-access-tool .mic-access-tool-general-button,
+      html:not([dir]) #mic-init-access-tool #mic-access-tool-general-button,
+      html:not([dir]) ._access-icon { right: 20px !important; left: auto !important; }
+      @media (max-width: 768px) { .whatsapp-float { display: flex !important; } }
+      @media (min-width: 769px) { .whatsapp-float { display: flex !important; } }
+      @media (max-width: 768px) {
+        #mic-access-tool-general-button, .mic-access-tool-general-button,
+        #mic-init-access-tool .mic-access-tool-general-button, #mic-init-access-tool #mic-access-tool-general-button,
+        ._access-icon { display: flex !important; visibility: visible !important; opacity: 1 !important; pointer-events: auto !important; }
+        #mic-access-tool-box.opened-mic-access-tool, .mic-access-tool-box.opened-mic-access-tool,
+        #mic-init-access-tool #mic-access-tool-box.opened-mic-access-tool {
+          visibility: visible !important; opacity: 1 !important; pointer-events: auto !important;
+        }
+      }
+      @media (min-width: 769px) {
+        #mic-access-tool-general-button, .mic-access-tool-general-button,
+        #mic-init-access-tool .mic-access-tool-general-button, #mic-init-access-tool #mic-access-tool-general-button,
+        ._access-icon { display: flex !important; visibility: visible !important; opacity: 1 !important; pointer-events: auto !important; }
+        #mic-access-tool-box.opened-mic-access-tool, .mic-access-tool-box.opened-mic-access-tool,
+        #mic-init-access-tool #mic-access-tool-box.opened-mic-access-tool {
+          visibility: visible !important; opacity: 1 !important; pointer-events: auto !important;
+        }
+      }
+    </style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+  <nav class="navbar">
+  <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+    <svg class="hamburger-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+    </svg>
+    <svg class="close-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" style="display: none;">
+      <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+    </svg>
+  </button>
+
+  <button class="phone-header-btn" data-phone="" aria-label="Call">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+    </svg>
+  </button>
+
+  <div class="nav-container">
+    <div class="nav-brand">
+      <a href="/" class="logo-link"><img class="logo" src="/assets/site-features-image-1.webp" alt="KW Adventure Magazine"></a>
+    </div>
+
+    <ul class="nav-menu" id="navMenu"><li><a href="/">Home</a></li><li><a href="/features">Features</a></li><li><a href="/about">About</a></li></ul>
+
+    <div class="nav-cta-container">
+      <a href="/contact" class="nav-cta-btn">Contact</a>
+    </div>
+  </div>
+</nav>
+<script>
+
+// Navbar Mobile Menu Toggle and Contrast Fix
+(function() {
+  // Use 'load' event instead of 'DOMContentLoaded' to ensure we run AFTER all other scripts
+  window.addEventListener('load', function() {
+    
+    // FIX MOBILE BUTTON CONTRAST
+    // Detect navbar background color and apply contrasting color to mobile buttons
+    const navbar = document.querySelector('.navbar, nav, header');
+    if (!navbar) {
+      console.log('[Navbar] Navbar element not found');
+      return;
+    }
+    
+    // DECLARE VARIABLES EARLY to avoid Temporal Dead Zone errors
+    // These are used in multiple places below
+    let mobileToggle = document.getElementById('mobileToggle') ||
+                       document.querySelector('.mobile-toggle') ||
+                       document.querySelector('.hamburger') ||
+                       document.querySelector('.hamburger-menu') ||
+                       document.querySelector('.menu-toggle') ||
+                       document.querySelector('.burger-menu') ||
+                       document.querySelector('[aria-label="Menu"]') ||
+                       document.querySelector('[aria-label="תפריט"]');
+    
+    const phoneBtn = document.querySelector('.phone-header-btn');
+    
+    const computedStyle = window.getComputedStyle(navbar);
+    let bgColor = computedStyle.backgroundColor;
+    
+    console.log('[Navbar] Initial navbar background:', bgColor);
+    
+    // Check if background is transparent or rgba with 0 alpha
+    const isTransparent = bgColor === 'transparent' || 
+                         bgColor === 'rgba(0, 0, 0, 0)' ||
+                         (bgColor.startsWith('rgba') && bgColor.includes(', 0)'));
+    
+    if (isTransparent) {
+      // Check for background-image or gradient
+      const bgImage = computedStyle.backgroundImage;
+      if (bgImage && bgImage !== 'none') {
+        console.log('[Navbar] Navbar has background image/gradient, using dark text');
+        bgColor = 'rgb(240, 240, 240)'; // Assume light background
+      } else {
+        // Transparent navbar - check body background
+        const bodyBg = window.getComputedStyle(document.body).backgroundColor;
+        console.log('[Navbar] Navbar transparent, using body background:', bodyBg);
+        bgColor = bodyBg;
+      }
+    }
+    
+    // Calculate luminance to determine if background is light or dark
+    const rgb = bgColor.match(/\d+/g);
+    if (rgb && rgb.length >= 3) {
+      const r = parseInt(rgb[0]);
+      const g = parseInt(rgb[1]);
+      const b = parseInt(rgb[2]);
+      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      
+      // Mobile button colors are set by Claude's AI-generated CSS (same as .nav-menu a)
+      // No dynamic color overrides needed - colors come from the generated navbar CSS
+      console.log('[Navbar] Mobile button colors preserved from Claude CSS (luminance:', luminance.toFixed(2) + ')');
+      
+      // FIX ICON SIZES - Ensure SVGs are properly sized and visible
+      // INJECT CRITICAL CSS TO OVERRIDE ANY CONFLICTING RULES
+      const criticalCSS = document.createElement('style');
+      criticalCSS.id = 'zappy-mobile-nav-fix';
+      const htmlLang = document.documentElement.lang || 'en';
+      const htmlDir = document.documentElement.dir || 'ltr';
+      // Check both dir attribute AND lang for RTL detection
+      // dir="rtl" is the most reliable indicator
+      const isRTL = htmlDir === 'rtl' || htmlLang === 'he' || htmlLang === 'ar';
+      
+      criticalCSS.textContent = `
+        /* Hide mobile buttons on desktop, show only on mobile */
+        @media (min-width: 769px) {
+          .mobile-toggle,
+          .phone-header-btn {
+            display: none !important;
+          }
+        }
+        
+        /* Show and position mobile buttons correctly on mobile */
+        @media (max-width: 768px) {
+          .navbar,
+          nav.navbar {
+            min-height: 70px !important;
+          }
+
+          .mobile-toggle,
+          .phone-header-btn {
+            position: absolute !important;
+            top: 0 !important;
+            bottom: 0 !important;
+            margin-top: auto !important;
+            margin-bottom: auto !important;
+            transform: none !important;
+            z-index: 1001 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 36px !important;
+            height: 36px !important;
+            border-radius: 50% !important;
+            border: none !important;
+            cursor: pointer !important;
+            padding: 6px !important;
+            background: none !important;
+            color: var(--nav-text, var(--text-dark)) !important;
+            touch-action: manipulation !important;
+            -webkit-tap-highlight-color: transparent !important;
+          }
+
+          html[data-zappy-site-type="ecommerce"] .phone-header-btn,
+          body[data-zappy-site-type="ecommerce"] .phone-header-btn,
+          html[data-zappy-site-type="ecommerce"] header .phone-header-btn,
+          html[data-zappy-site-type="ecommerce"] nav .phone-header-btn {
+            display: none !important;
+            visibility: hidden !important;
+            width: 0 !important;
+            height: 0 !important;
+            min-width: 0 !important;
+            overflow: hidden !important;
+          }
+          
+          /* LTR positioning (default): hamburger LEFT, phone RIGHT */
+          html:not([dir="rtl"]):not([lang="he"]):not([lang="ar"]) .mobile-toggle,
+          html[dir="ltr"] .mobile-toggle {
+            left: 12px !important;
+            right: auto !important;
+          }
+          html:not([dir="rtl"]):not([lang="he"]):not([lang="ar"]) .phone-header-btn,
+          html[dir="ltr"] .phone-header-btn {
+            right: 12px !important;
+            left: auto !important;
+          }
+          
+          /* RTL positioning: hamburger RIGHT, phone LEFT */
+          html[dir="rtl"] .mobile-toggle,
+          html[lang="he"] .mobile-toggle,
+          html[lang="ar"] .mobile-toggle {
+            right: 12px !important;
+            left: auto !important;
+          }
+          html[dir="rtl"] .phone-header-btn,
+          html[lang="he"] .phone-header-btn,
+          html[lang="ar"] .phone-header-btn {
+            left: 12px !important;
+            right: auto !important;
+          }
+          
+          /* CRITICAL: Ensure nav-container has min-height on mobile */
+          /* All children are positioned absolutely/fixed on mobile, so height:auto collapses to 0 */
+          .nav-container {
+            min-height: 70px !important;
+            position: relative !important;
+          }
+          
+          /* Ensure SVG icons are properly sized and inherit color */
+          .mobile-toggle svg,
+          .phone-header-btn svg {
+            width: 24px !important;
+            height: 24px !important;
+            /* Don't force display - let JavaScript control hamburger/close toggle */
+          }
+          
+          /* Reset nav-cta-container on mobile - remove desktop box-shadow/padding */
+          /* that creates a visible ghost box when CTA button is hidden */
+          .nav-cta-container {
+            box-shadow: none !important;
+            padding: 0 !important;
+          }
+          
+          /* Hide nav-cta-container entirely on mobile when there's no lang-switcher */
+          /* (only the CTA button is inside, and it's hidden on mobile) */
+          .nav-cta-container:not(:has(.lang-switcher)) {
+            display: none !important;
+          }
+          
+          /* CRITICAL: Prevent hero image fade gradient from bleeding over headline text */
+          /* The .image-fade-gradient has bottom: -30px (extends below parent) */
+          /* On mobile stacked layout, this overlaps the h1 text below the image */
+          .hero-image-column {
+            overflow: hidden !important;
+          }
+          .image-fade-gradient {
+            bottom: 0 !important;
+          }
+          
+          /* Hide desktop language switcher on mobile - hamburger menu handles it */
+          /* High specificity to override stored CSS */
+          .lang-switcher,
+          .nav-cta-container .lang-switcher,
+          .nav-container .lang-switcher,
+          .navbar .lang-switcher,
+          .navbar .nav-cta-container .lang-switcher {
+            display: none !important;
+          }
+        }
+      `;
+      
+      // Remove existing fix if present and inject new one
+      const existing = document.getElementById('zappy-mobile-nav-fix');
+      if (existing) existing.remove();
+      document.head.appendChild(criticalCSS);
+      
+      console.log('[Navbar] Critical CSS injected for mobile nav positioning');
+      
+      // ONLY apply inline positioning styles on mobile viewport
+      // On desktop, the CSS handles hiding these buttons with display: none
+      // Inline styles were breaking desktop layout by overriding CSS
+      const isMobileViewport = window.innerWidth <= 768;
+      
+      if (mobileToggle) {
+        // Icon sizing applies to all viewports for consistency
+        const hamburgerIcon = mobileToggle.querySelector('.hamburger-icon');
+        const closeIcon = mobileToggle.querySelector('.close-icon');
+        
+        if (hamburgerIcon) {
+          hamburgerIcon.style.setProperty('width', '24px', 'important');
+          hamburgerIcon.style.setProperty('height', '24px', 'important');
+          hamburgerIcon.style.setProperty('display', 'block', 'important'); // Show hamburger by default
+        }
+        if (closeIcon) {
+          closeIcon.style.setProperty('width', '24px', 'important');
+          closeIcon.style.setProperty('height', '24px', 'important');
+          closeIcon.style.setProperty('display', 'none', 'important'); // Hide close icon by default
+        }
+        
+        // ONLY set positioning inline styles on mobile
+        if (isMobileViewport) {
+          mobileToggle.style.setProperty('position', 'absolute', 'important');
+          mobileToggle.style.setProperty('top', '0', 'important');
+          mobileToggle.style.setProperty('bottom', '0', 'important');
+          mobileToggle.style.setProperty('margin-top', 'auto', 'important');
+          mobileToggle.style.setProperty('margin-bottom', 'auto', 'important');
+          mobileToggle.style.setProperty('transform', 'none', 'important');
+          mobileToggle.style.setProperty('z-index', '1001', 'important');
+          
+          // Clear any inline left/right so CSS can take over based on html[dir]
+          mobileToggle.style.removeProperty('left');
+          mobileToggle.style.removeProperty('right');
+          
+          console.log('[Navbar] Mobile toggle positioning applied (mobile viewport)');
+        } else {
+          // On desktop, clear any positioning styles to let CSS handle it
+          mobileToggle.style.removeProperty('position');
+          mobileToggle.style.removeProperty('top');
+          mobileToggle.style.removeProperty('transform');
+          mobileToggle.style.removeProperty('z-index');
+          mobileToggle.style.removeProperty('left');
+          mobileToggle.style.removeProperty('right');
+          console.log('[Navbar] Desktop viewport - cleared mobile toggle inline positioning');
+        }
+      }
+      
+      if (phoneBtn) {
+        // Icon sizing applies to all viewports
+        const phoneIcon = phoneBtn.querySelector('svg');
+        if (phoneIcon) {
+          phoneIcon.style.width = '24px';
+          phoneIcon.style.height = '24px';
+          phoneIcon.setAttribute('width', '24');
+          phoneIcon.setAttribute('height', '24');
+        }
+        
+        // ONLY set positioning inline styles on mobile
+        if (isMobileViewport) {
+          phoneBtn.style.setProperty('position', 'absolute', 'important');
+          phoneBtn.style.setProperty('top', '0', 'important');
+          phoneBtn.style.setProperty('bottom', '0', 'important');
+          phoneBtn.style.setProperty('margin-top', 'auto', 'important');
+          phoneBtn.style.setProperty('margin-bottom', 'auto', 'important');
+          phoneBtn.style.setProperty('transform', 'none', 'important');
+          phoneBtn.style.setProperty('z-index', '1001', 'important');
+          
+          // Clear any inline left/right so CSS can take over based on html[dir]
+          phoneBtn.style.removeProperty('left');
+          phoneBtn.style.removeProperty('right');
+          
+          console.log('[Navbar] Phone button positioning applied (mobile viewport)');
+        } else {
+          // On desktop, clear any positioning styles to let CSS handle it
+          phoneBtn.style.removeProperty('position');
+          phoneBtn.style.removeProperty('top');
+          phoneBtn.style.removeProperty('transform');
+          phoneBtn.style.removeProperty('z-index');
+          phoneBtn.style.removeProperty('left');
+          phoneBtn.style.removeProperty('right');
+          console.log('[Navbar] Desktop viewport - cleared phone button inline positioning');
+        }
+      }
+    } else {
+      console.log('[Navbar] Could not parse background color:', bgColor);
+    }
+    
+    // MOBILE MENU TOGGLE
+    // Re-query in case DOM changed (mobileToggle already declared at top of function)
+    mobileToggle = document.getElementById('mobileToggle') ||
+                   document.querySelector('.mobile-toggle') ||
+                   document.querySelector('.hamburger') ||
+                   document.querySelector('.hamburger-menu') ||
+                   document.querySelector('.menu-toggle') ||
+                   document.querySelector('.burger-menu') ||
+                   document.querySelector('[aria-label="Menu"]') ||
+                   document.querySelector('[aria-label="תפריט"]');
+    
+    // EXPANDED SEARCH: Find nav menu by ID or class
+    const navMenu = document.getElementById('navMenu') ||
+                  document.querySelector('.nav-menu') ||
+                  document.querySelector('.nav-links') ||
+                  document.querySelector('nav ul:not(.submenu)');
+    
+    if (!mobileToggle || !navMenu) {
+      console.log('[Navbar] Mobile toggle or menu not found:', { toggle: !!mobileToggle, menu: !!navMenu });
+      return;
+    }
+    
+    // Ensure navMenu has ID for CSS targeting
+    if (!navMenu.id) {
+      navMenu.id = 'navMenu';
+    }
+    
+    console.log('[Navbar] Initializing mobile menu...');
+    
+    // Remove any existing event listeners by cloning the button
+    const newToggle = mobileToggle.cloneNode(true);
+    mobileToggle.parentNode.replaceChild(newToggle, mobileToggle);
+    
+    // Toggle menu handler (shared by click and touchend)
+    function handleToggle(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const hamburgerIcon = newToggle.querySelector('.hamburger-icon');
+      const closeIcon = newToggle.querySelector('.close-icon');
+      const isActive = navMenu.classList.contains('active');
+      
+      if (isActive) {
+        // Close menu
+        navMenu.classList.remove('active');
+        if (hamburgerIcon) hamburgerIcon.style.setProperty('display', 'block', 'important');
+        if (closeIcon) closeIcon.style.setProperty('display', 'none', 'important');
+        document.body.style.overflow = '';
+        console.log('[Navbar] Menu closed');
+      } else {
+        // Open menu
+        navMenu.classList.add('active');
+        if (hamburgerIcon) hamburgerIcon.style.setProperty('display', 'none', 'important');
+        if (closeIcon) closeIcon.style.setProperty('display', 'block', 'important');
+        document.body.style.overflow = 'hidden';
+        console.log('[Navbar] Menu opened');
+      }
+    }
+    
+    // Use click for desktop/emulation and touchend as iOS Safari fallback.
+    // Prevent double-fire with a timestamp guard.
+    var lastToggleTime = 0;
+    function guardedToggle(e) {
+      var now = Date.now();
+      if (now - lastToggleTime < 300) return;
+      lastToggleTime = now;
+      handleToggle(e);
+    }
+    
+    newToggle.addEventListener('click', guardedToggle);
+    newToggle.addEventListener('touchend', guardedToggle);
+    
+    // Close menu when clicking nav links (but NOT dropdown toggles)
+    const navLinks = navMenu.querySelectorAll('a');
+    navLinks.forEach(function(link) {
+      link.addEventListener('click', function() {
+        // Don't close if it's a dropdown child (unless it's a real navigation link)
+        if (this.getAttribute('href') === '#') return;
+        
+        const hamburgerIcon = newToggle.querySelector('.hamburger-icon');
+        const closeIcon = newToggle.querySelector('.close-icon');
+        
+        navMenu.classList.remove('active');
+        if (hamburgerIcon) hamburgerIcon.style.setProperty('display', 'block', 'important');
+        if (closeIcon) closeIcon.style.setProperty('display', 'none', 'important');
+        document.body.style.overflow = '';
+        console.log('[Navbar] Menu closed (link clicked)');
+      });
+    });
+    
+    // DROPDOWN MENU TOGGLE (for mobile and touch devices)
+    var dropdownToggles = navMenu.querySelectorAll('.dropdown-toggle');
+    dropdownToggles.forEach(function(toggle) {
+      toggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var parent = this.closest('.nav-dropdown');
+        if (!parent) return;
+        
+        // Close other open dropdowns at the same level
+        var siblings = parent.parentNode.querySelectorAll('.nav-dropdown.open');
+        siblings.forEach(function(sib) {
+          if (sib !== parent) sib.classList.remove('open');
+        });
+        
+        parent.classList.toggle('open');
+        console.log('[Navbar] Dropdown toggled:', parent.classList.contains('open') ? 'open' : 'closed');
+      });
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.nav-dropdown')) {
+        var openDropdowns = document.querySelectorAll('.nav-dropdown.open');
+        openDropdowns.forEach(function(dd) { dd.classList.remove('open'); });
+      }
+    });
+    
+    console.log('[Navbar] Dropdown handlers initialized for ' + dropdownToggles.length + ' dropdowns');
+    
+    // Phone button functionality (phoneBtn already declared at top of function)
+    if (phoneBtn) {
+      phoneBtn.addEventListener('click', function() {
+        // Get phone number from placeholder in page or use default
+        const phoneLinks = document.querySelectorAll('a[href^="tel:"]');
+        const phoneNumber = phoneLinks.length > 0 
+          ? phoneLinks[0].getAttribute('href').replace('tel:', '')
+          : '[business_phone]';
+        
+        window.location.href = 'tel:' + phoneNumber;
+        console.log('[Navbar] Phone button clicked');
+      });
+    }
+    
+    console.log('[Navbar] Mobile menu initialized successfully');
+    
+    // WhatsApp button visibility is now controlled via CSS (siteSettings).
+    // No JS-based desktop hiding — the button is visible on both mobile and desktop by default.
+  });
+})();
+
+</script>
+  
+  <main id="main">
+    <section class="features-intro-section" data-layout-spec="Features-intro">
+
+  <!-- Mountain sketch decorative motif -->
+  <svg class="fi-mountain-sketch" data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 220 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M40,140 L90,60 L120,90 L150,30 L200,140" stroke="#2C2416" stroke-width="1.5" stroke-linejoin="round" fill="none"></path>
+    <path d="M140,140 L170,80 L195,110 L210,70" stroke="#2C2416" stroke-width="1" stroke-linejoin="round" fill="none" opacity="0.6"></path>
+    <!-- Cross-hatching -->
+    <line x1="80" y1="90" x2="100" y2="95" stroke="#2C2416" stroke-width="0.8"></line>
+    <line x1="82" y1="100" x2="105" y2="106" stroke="#2C2416" stroke-width="0.8"></line>
+    <line x1="85" y1="110" x2="110" y2="116" stroke="#2C2416" stroke-width="0.8"></line>
+    <line x1="88" y1="120" x2="115" y2="126" stroke="#2C2416" stroke-width="0.8"></line>
+    <line x1="91" y1="130" x2="120" y2="136" stroke="#2C2416" stroke-width="0.8"></line>
+    <line x1="76" y1="95" x2="78" y2="115" stroke="#2C2416" stroke-width="0.8"></line>
+    <line x1="86" y1="90" x2="90" y2="115" stroke="#2C2416" stroke-width="0.8"></line>
+    <line x1="96" y1="92" x2="102" y2="118" stroke="#2C2416" stroke-width="0.8"></line>
+  </svg>
+
+  <div class="fi-container">
+    <div class="fi-grid">
+
+      <!-- START: Content Column -->
+      <div class="fi-content-col">
+        <span class="fi-eyebrow">Editorial Coverage</span>
+        <h1 class="fi-heading">Stories from the
+          <em>Edge of the Map</em>
+        </h1>
+        <p class="fi-intro-paragraph">KW Adventure Magazine chronicles the full spectrum of outdoor life — from wind-scoured ridgelines and river crossings to the quiet ethics of leaving a landscape as you found it. Our editorial coverage spans rugged landscapes, hard-won skills, environmental stewardship, and the visual storytelling that makes wild places feel immediate and real.</p>
+        <p class="fi-support-paragraph">Inside every issue, you'll find long-form features on remote expeditions, practical guides for backcountry navigation, photo essays shot in demanding conditions, and reflective essays on what it means to move through the world with curiosity and care.</p>
+        <div class="fi-cta-row">
+          <a href="/contact" class="fi-btn-primary">Explore the Magazine</a>
+          <a href="/contact" class="fi-btn-ghost">View All Issues <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <!-- END: Editorial Image Column -->
+      <div class="fi-image-col">
+        <!-- Paper backplate -->
+        <div class="fi-paper-backplate" aria-hidden="true"></div>
+        <!-- Mounted image frame -->
+        <div class="fi-image-mount">
+          <img loading="eager" fetchpriority="high" data-placeholder="features-intro-image-1" data-context="A tall editorial-style photograph of an outdoor adventurer on a dramatic mountain landscape — a lone figure standing on a rocky ridge with sweeping valley views below, warm golden-hour light, film-grain texture, shot in a field-journal documentary style for an adventure magazine features page" width="520" height="680" src="/assets/site-features-intro-image-1.webp" alt="Adventurer on a mountain ridge at golden hour for KW Adventure Magazine">
+          <!-- Botanical branch decoration on image -->
+          <svg class="fi-botanical-branch" data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 70 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M35,115 Q30,90 28,70 Q25,50 20,30 Q18,18 22,8" stroke="#4A6741" stroke-width="1.5" fill="none" stroke-linecap="round"></path>
+            <path d="M28,70 Q18,62 10,58" stroke="#4A6741" stroke-width="1.2" fill="none" stroke-linecap="round"></path>
+            <path d="M25,55 Q15,48 8,46" stroke="#4A6741" stroke-width="1.2" fill="none" stroke-linecap="round"></path>
+            <path d="M30,85 Q42,76 50,70" stroke="#4A6741" stroke-width="1.2" fill="none" stroke-linecap="round"></path>
+            <path d="M27,65 Q38,58 46,54" stroke="#4A6741" stroke-width="1.2" fill="none" stroke-linecap="round"></path>
+            <ellipse cx="10" cy="57" rx="4" ry="2.5" fill="#4A6741" opacity="0.6" transform="rotate(-20 10 57)"></ellipse>
+            <ellipse cx="8" cy="45" rx="4" ry="2.5" fill="#4A6741" opacity="0.6" transform="rotate(-25 8 45)"></ellipse>
+            <ellipse cx="50" cy="69" rx="4" ry="2.5" fill="#4A6741" opacity="0.6" transform="rotate(15 50 69)"></ellipse>
+            <ellipse cx="46" cy="53" rx="4" ry="2.5" fill="#4A6741" opacity="0.6" transform="rotate(10 46 53)"></ellipse>
+          </svg>
+          <!-- Small label tag on image -->
+          <div class="fi-image-tag">Vol. XII — Landscapes &amp; Light</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom topographic divider -->
+  <div class="fi-topo-divider-wrapper">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 1200 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Topographic lines (decorative, light) -->
+      <path d="M0,55 Q80,48 160,52 T320,50 Q400,54 480,49 T640,51 Q720,56 800,50 T960,52 Q1040,48 1120,53 T1200,51" stroke="rgba(180,160,130,0.3)" stroke-width="1" fill="#F2EDE6"></path>
+      <path d="M0,63 Q80,57 160,61 T320,59 Q400,63 480,58 T640,60 Q720,65 800,59 T960,61 Q1040,57 1120,62 T1200,60" stroke="rgba(180,160,130,0.2)" stroke-width="1" fill="#F2EDE6"></path>
+      <!-- Fill to next section -->
+      <path d="M0,90 L0,68 Q60,62 120,66 T240,63 Q300,67 360,62 T480,64 Q540,69 600,63 T720,65 Q780,70 840,64 T960,66 Q1020,62 1080,67 T1200,65 L1200,90 Z" fill="#F2EDE6"></path>
+    </svg>
+  </div>
+
+</section>
+
+<section class="features-services-section" data-layout-spec="Features-services">
+  <!-- Decorative mountain sketch -->
+  <svg class="fss-mountain-deco" data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 220 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 140 L80 40 L110 75 L140 20 L200 140 Z" stroke="#2C2416" stroke-width="1.2" fill="none" opacity="0.12"></path>
+    <path d="M80 40 L95 60 M95 60 L105 50 M105 50 L110 55" stroke="#2C2416" stroke-width="0.8" fill="none" opacity="0.12"></path>
+    <path d="M140 20 L155 45 M155 45 L165 35 M165 35 L172 42" stroke="#2C2416" stroke-width="0.8" fill="none" opacity="0.12"></path>
+    <line x1="30" y1="120" x2="50" y2="100" stroke="#2C2416" stroke-width="0.6" opacity="0.08"></line>
+    <line x1="38" y1="128" x2="55" y2="108" stroke="#2C2416" stroke-width="0.6" opacity="0.08"></line>
+    <line x1="160" y1="80" x2="178" y2="62" stroke="#2C2416" stroke-width="0.6" opacity="0.08"></line>
+    <line x1="168" y1="88" x2="184" y2="70" stroke="#2C2416" stroke-width="0.6" opacity="0.08"></line>
+  </svg>
+
+  <div class="fss-container">
+    <!-- Section Header -->
+    <header class="fss-header">
+      <span class="fss-eyebrow">Explore Our Coverage</span>
+      <h2 class="fss-title">Stories That Take You There</h2>
+      <p class="fss-subtitle">Six editorial territories where every page is a departure point. Dive into the categories that define our field-journal approach to adventure publishing and outdoor media.</p>
+      <div class="fss-title-rule"></div>
+    </header>
+
+    <!-- Cards Grid -->
+    <div class="fss-grid">
+
+      <!-- Card 1: Hiking & Trekking -->
+      <article class="fss-card">
+        <figure class="fss-card-img-wrap">
+          <img loading="lazy" decoding="async" data-placeholder="features-services-image-1" data-context="Dramatic aerial view of a lone hiker on a winding mountain trail through alpine meadows with misty peaks in background, warm golden hour light, adventure magazine editorial photography style" width="600" height="400" src="/assets/site-features-services-image-1.webp" alt="Hiker on a mountain trail at golden hour" class="fss-card-img">
+          <span class="fss-card-tag">Hiking &amp; Trekking</span>
+        </figure>
+        <div class="fss-card-body">
+          <div class="fss-olive-rule"></div>
+          <h3 class="fss-card-title">Trails Less Mapped</h3>
+          <p class="fss-card-desc">Route dispatches, elevation profiles, and first-person accounts from multi-day treks across every continent — from Patagonian ridgelines to Himalayan high passes.</p>
+          <a href="/contact" class="fss-card-link">Read the trail notes <span class="fss-arrow" aria-hidden="true">→</span></a>
+        </div>
+        <!-- Botanical branch deco -->
+        <svg class="fss-branch-deco" data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 60 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M30 75 Q28 50 30 30 Q32 15 30 5" stroke="#4A6741" stroke-width="1.2" fill="none" opacity="0.5"></path>
+          <path d="M30 55 Q18 48 12 40" stroke="#4A6741" stroke-width="1" fill="none" opacity="0.5"></path>
+          <path d="M30 42 Q42 35 48 28" stroke="#4A6741" stroke-width="1" fill="none" opacity="0.5"></path>
+          <ellipse cx="11" cy="39" rx="4" ry="2.5" transform="rotate(-30 11 39)" fill="#4A6741" opacity="0.45"></ellipse>
+          <ellipse cx="49" cy="27" rx="4" ry="2.5" transform="rotate(20 49 27)" fill="#4A6741" opacity="0.45"></ellipse>
+          <ellipse cx="29" cy="4" rx="3" ry="2" fill="#4A6741" opacity="0.45"></ellipse>
+        </svg>
+      </article>
+
+      <!-- Card 2: Water Adventures -->
+      <article class="fss-card">
+        <figure class="fss-card-img-wrap">
+          <img loading="lazy" decoding="async" data-placeholder="features-services-image-2" data-context="Kayaker paddling through turquoise sea caves with dramatic limestone cliffs, crystal clear water, adventure travel editorial photography for an outdoor magazine" width="600" height="400" src="/assets/site-features-services-image-2.webp" alt="Kayaker exploring turquoise sea caves" class="fss-card-img">
+          <span class="fss-card-tag">Water Adventures</span>
+        </figure>
+        <div class="fss-card-body">
+          <div class="fss-olive-rule"></div>
+          <h3 class="fss-card-title">Into Open Water</h3>
+          <p class="fss-card-desc">Whitewater journals, open-ocean crossings, sea-kayaking routes, and river expedition logs. We follow the current wherever it leads — and report back from the other side.</p>
+          <a href="/contact" class="fss-card-link">Dive in <span class="fss-arrow" aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <!-- Card 3: Wildlife Encounters -->
+      <article class="fss-card fss-card--tall">
+        <figure class="fss-card-img-wrap">
+          <img loading="lazy" decoding="async" data-placeholder="features-services-image-3" data-context="Close-up wildlife encounter with a wild elephant in golden savanna grass at sunset, documentary nature photography style, warm cinematic tones for adventure magazine" width="600" height="400" src="/assets/site-features-services-image-3.webp" alt="Wild elephant encounter in golden savanna" class="fss-card-img">
+          <span class="fss-card-tag">Wildlife Encounters</span>
+        </figure>
+        <div class="fss-card-body">
+          <div class="fss-olive-rule"></div>
+          <h3 class="fss-card-title">Field Notes on the Wild</h3>
+          <p class="fss-card-desc">Naturalist dispatches, ethical encounter guides, and conservation stories from the field. We document wildlife on its own terms — with reverence, patience, and a good lens.</p>
+          <a href="/contact" class="fss-card-link">Enter the field <span class="fss-arrow" aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <!-- Card 4: Adventure Photography -->
+      <article class="fss-card">
+        <figure class="fss-card-img-wrap">
+          <img loading="lazy" decoding="async" data-placeholder="features-services-image-4" data-context="Adventure photographer on a rocky cliff edge capturing landscape with professional camera gear, dramatic stormy sky backdrop, editorial photography for outdoor publishing media" width="600" height="400" src="/assets/site-features-services-image-4.webp" alt="Adventure photographer on cliff edge with dramatic sky" class="fss-card-img">
+          <span class="fss-card-tag">Adventure Photography</span>
+        </figure>
+        <div class="fss-card-body">
+          <div class="fss-olive-rule"></div>
+          <h3 class="fss-card-title">Light at the Edge</h3>
+          <p class="fss-card-desc">Technique deep-dives, gear reviews, and portfolios from photographers who carry their cameras to places most people only dream of. The craft behind the image — and the story behind the shot.</p>
+          <a href="/contact" class="fss-card-link">See the work <span class="fss-arrow" aria-hidden="true">→</span></a>
+        </div>
+        <!-- Botanical branch deco -->
+        <svg class="fss-branch-deco fss-branch-deco--right" data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 60 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M30 75 Q28 50 30 30 Q32 15 30 5" stroke="#4A6741" stroke-width="1.2" fill="none" opacity="0.5"></path>
+          <path d="M30 60 Q20 52 14 44" stroke="#4A6741" stroke-width="1" fill="none" opacity="0.5"></path>
+          <path d="M30 45 Q40 38 46 30" stroke="#4A6741" stroke-width="1" fill="none" opacity="0.5"></path>
+          <ellipse cx="13" cy="43" rx="4" ry="2.5" transform="rotate(-30 13 43)" fill="#4A6741" opacity="0.45"></ellipse>
+          <ellipse cx="47" cy="29" rx="4" ry="2.5" transform="rotate(20 47 29)" fill="#4A6741" opacity="0.45"></ellipse>
+          <ellipse cx="29" cy="4" rx="3" ry="2" fill="#4A6741" opacity="0.45"></ellipse>
+        </svg>
+      </article>
+
+      <!-- Card 5: Sustainable Travel -->
+      <article class="fss-card">
+        <figure class="fss-card-img-wrap">
+          <img loading="lazy" decoding="async" data-placeholder="features-services-image-5" data-context="Eco-lodge nestled in dense tropical rainforest with solar panels and sustainable architecture, green travel and responsible tourism editorial photography for adventure magazine" width="600" height="400" src="/assets/site-features-services-image-5.webp" alt="Eco-lodge in tropical rainforest for sustainable travel" class="fss-card-img">
+          <span class="fss-card-tag">Sustainable Travel</span>
+        </figure>
+        <div class="fss-card-body">
+          <div class="fss-olive-rule"></div>
+          <h3 class="fss-card-title">Leave It Better</h3>
+          <p class="fss-card-desc">Responsible travel frameworks, low-impact route planning, and profiles of communities leading the way in conservation-minded adventure. Exploring the world without extracting from it.</p>
+          <a href="/contact" class="fss-card-link">Travel lighter <span class="fss-arrow" aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <!-- Card 6: Field Guides -->
+      <article class="fss-card">
+        <figure class="fss-card-img-wrap">
+          <img loading="lazy" decoding="async" data-placeholder="features-services-image-6" data-context="Open field guide journal with hand-drawn botanical illustrations and topographic maps spread on a wooden camp table with compass and pencil, warm natural light, editorial flat lay photography for adventure publishing" width="600" height="400" src="/assets/site-features-services-image-6.webp" alt="Field guide journal with botanical illustrations and maps" class="fss-card-img">
+          <span class="fss-card-tag">Field Guides</span>
+        </figure>
+        <div class="fss-card-body">
+          <div class="fss-olive-rule"></div>
+          <h3 class="fss-card-title">The Annotated Outdoors</h3>
+          <p class="fss-card-desc">Curated reference guides, species identification primers, and practical field manuals drawn from years of contributor expertise. The essential reading list for every pack, shelf, and glove box.</p>
+          <a href="/contact" class="fss-card-link">Open the guide <span class="fss-arrow" aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+    </div><!-- end .fss-grid -->
+  </div><!-- end .fss-container -->
+
+  <!-- Bottom divider: soft brush-shaped terracotta band -->
+  <div class="fss-divider-wrapper">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 1200 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,90 L0,38 Q60,28 120,36 T240,30 Q300,36 360,26 T480,32 Q540,28 600,34 T720,26 Q780,32 840,24 T960,30 Q1020,26 1080,32 T1200,28 L1200,90 Z" fill="#1A150D"></path>
+      <path d="M0,90 L0,52 Q60,44 120,50 T240,44 Q300,50 360,42 T480,48 Q540,44 600,50 T720,42 Q780,48 840,40 T960,46 Q1020,42 1080,48 T1200,44 L1200,90 Z" fill="#1A150D" opacity="0.18"></path>
+    </svg>
+  </div>
+
+</section>
+
+<section class="features-benefits-section" data-layout-spec="Features-benefits">
+  <!-- Decorative mountain sketch -->
+  <svg class="features-benefits-section__mountain-deco" data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 220 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g opacity="0.10" stroke="#EDE3D3" stroke-width="1.2" fill="none">
+      <polyline points="20,150 90,40 130,90 160,55 200,150"></polyline>
+      <line x1="90" y1="40" x2="75" y2="65"></line>
+      <line x1="90" y1="40" x2="105" y2="68"></line>
+      <line x1="75" y1="65" x2="85" y2="72"></line>
+      <line x1="105" y1="68" x2="95" y2="75"></line>
+      <line x1="160" y1="55" x2="148" y2="78"></line>
+      <line x1="160" y1="55" x2="172" y2="80"></line>
+      <line x1="148" y1="78" x2="156" y2="84"></line>
+      <line x1="172" y1="80" x2="164" y2="86"></line>
+      <line x1="50" y1="110" x2="60" y2="118"></line>
+      <line x1="60" y1="118" x2="70" y2="110"></line>
+      <line x1="140" y1="115" x2="150" y2="122"></line>
+      <line x1="150" y1="122" x2="160" y2="115"></line>
+    </g>
+  </svg>
+
+  <div class="features-benefits-section__container">
+    <!-- Section Header -->
+    <header class="features-benefits-section__header">
+      <span class="features-benefits-section__eyebrow">Why KW Adventure</span>
+      <h2 class="features-benefits-section__heading">What Every Issue Brings to the Trail</h2>
+    </header>
+
+    <!-- Benefit Rows -->
+    <div class="features-benefits-section__rows">
+
+      <!-- Row 1: Inspiring Discovery -->
+      <article class="features-benefits-section__row">
+        <div class="features-benefits-section__row-icon" aria-hidden="true">
+          <svg data-element-type="icon" data-icon-type="svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
+            <circle cx="24" cy="24" r="14" stroke="currentColor" stroke-width="1.5"></circle>
+            <line x1="24" y1="4" x2="24" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></line>
+            <line x1="24" y1="38" x2="24" y2="44" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></line>
+            <line x1="4" y1="24" x2="10" y2="24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></line>
+            <line x1="38" y1="24" x2="44" y2="24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></line>
+            <circle cx="24" cy="24" r="3" stroke="currentColor" stroke-width="1.5"></circle>
+            <line x1="24" y1="21" x2="24" y2="14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></line>
+          </svg>
+        </div>
+        <div class="features-benefits-section__row-content">
+          <h3 class="features-benefits-section__row-title">Inspiring Discovery</h3>
+          <p class="features-benefits-section__row-text">Each issue is a compass pointing toward places you haven't been yet. Our editors travel off the marked trail to surface destinations, cultures, and landscapes that reignite the restless spirit in every reader — whether you're planning your next expedition or simply dreaming from the couch.</p>
+        </div>
+        <div class="features-benefits-section__row-number" aria-hidden="true">01</div>
+      </article>
+
+      <div class="features-benefits-section__separator" role="separator" aria-hidden="true"></div>
+
+      <!-- Row 2: Practical Insight -->
+      <article class="features-benefits-section__row">
+        <div class="features-benefits-section__row-icon" aria-hidden="true">
+          <svg data-element-type="icon" data-icon-type="svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
+            <rect x="8" y="6" width="28" height="36" rx="3" stroke="currentColor" stroke-width="1.5"></rect>
+            <line x1="14" y1="16" x2="30" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></line>
+            <line x1="14" y1="22" x2="30" y2="22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></line>
+            <line x1="14" y1="28" x2="24" y2="28" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></line>
+            <circle cx="34" cy="36" r="7" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+            <line x1="34" y1="33" x2="34" y2="37" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></line>
+            <circle cx="34" cy="39" r="0.8" fill="currentColor"></circle>
+          </svg>
+        </div>
+        <div class="features-benefits-section__row-content">
+          <h3 class="features-benefits-section__row-title">Practical Insight for the Field</h3>
+          <p class="features-benefits-section__row-text">Adventure demands preparation. Our gear reviews, route guides, and expert field notes are written by people who've actually used the kit and walked the ground. Honest, detailed, and free of filler — the kind of practical publishing that earns its place in your pack.</p>
+        </div>
+        <div class="features-benefits-section__row-number" aria-hidden="true">02</div>
+      </article>
+
+      <div class="features-benefits-section__separator" role="separator" aria-hidden="true"></div>
+
+      <!-- Row 3: Ecological Awareness -->
+      <article class="features-benefits-section__row">
+        <div class="features-benefits-section__row-icon" aria-hidden="true">
+          <svg data-element-type="icon" data-icon-type="svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
+            <path d="M24 40 C24 40 10 30 10 20 C10 13.4 16.3 8 24 8 C31.7 8 38 13.4 38 20 C38 30 24 40 24 40Z" stroke="currentColor" stroke-width="1.5" fill="none"></path>
+            <path d="M24 20 C20 16 14 17 12 22" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"></path>
+            <path d="M24 20 C28 15 34 16 36 21" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"></path>
+            <line x1="24" y1="20" x2="24" y2="34" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"></line>
+          </svg>
+        </div>
+        <div class="features-benefits-section__row-content">
+          <h3 class="features-benefits-section__row-title">Ecological Awareness</h3>
+          <p class="features-benefits-section__row-text">The outdoors is not a backdrop — it's the story. KW Adventure weaves conservation, climate context, and ecological responsibility into every feature. We believe the best adventure media leaves readers more curious about the natural world and more committed to protecting it.</p>
+        </div>
+        <div class="features-benefits-section__row-number" aria-hidden="true">03</div>
+      </article>
+
+      <div class="features-benefits-section__separator" role="separator" aria-hidden="true"></div>
+
+      <!-- Row 4: Visual Curation & Storytelling -->
+      <article class="features-benefits-section__row">
+        <div class="features-benefits-section__row-icon" aria-hidden="true">
+          <svg data-element-type="icon" data-icon-type="svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
+            <rect x="6" y="10" width="36" height="28" rx="3" stroke="currentColor" stroke-width="1.5"></rect>
+            <circle cx="17" cy="20" r="4" stroke="currentColor" stroke-width="1.4"></circle>
+            <path d="M6 32 L16 24 L22 29 L30 20 L42 32" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+          </svg>
+        </div>
+        <div class="features-benefits-section__row-content">
+          <h3 class="features-benefits-section__row-title">Strong Visual Curation &amp; Storytelling</h3>
+          <p class="features-benefits-section__row-text">Every spread is art-directed with the same care as the writing. From sweeping landscape photography to intimate field portraits, our visual editors curate imagery that transports you before a single word is read. It's outdoor storytelling elevated to the standard of online publishing platforms that respect the reader's eye.</p>
+        </div>
+        <div class="features-benefits-section__row-number" aria-hidden="true">04</div>
+      </article>
+
+    </div>
+  </div>
+
+  <!-- Bottom gradient fade divider -->
+  <div class="features-benefits-section__divider-wrapper" aria-hidden="true">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 1200 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="fbMistGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#2F2A26" stop-opacity="0"></stop>
+          <stop offset="100%" stop-color="#EDE3D3" stop-opacity="1"></stop>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="1200" height="80" fill="url(#fbMistGrad)"></rect>
+    </svg>
+  </div>
+</section>
+
+<section class="features-reviews-section" data-layout-spec="Features-reviews">
+  <div class="features-reviews-container">
+
+    <!-- Section Header -->
+    <div class="features-reviews-header">
+      <span class="features-reviews-eyebrow">Reader Voices</span>
+      <h2 class="features-reviews-title">What the Field Says</h2>
+      <p class="features-reviews-subtitle">Longer-form endorsements from explorers, photographers, and adventure partners who live inside every issue.</p>
+    </div>
+
+    <!-- Review Panel 1 -->
+    <article class="features-review-panel features-review-panel--1">
+      <!-- Decorative mountain sketch -->
+      <svg class="features-review-mountain-deco" data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 180 120" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20,110 L70,30 L90,55 L110,20 L160,110" fill="none" stroke="#2C2416" stroke-width="1.5" stroke-linejoin="round"></path>
+        <path d="M60,48 L70,30 L80,48" fill="none" stroke="#2C2416" stroke-width="1"></path>
+        <line x1="55" y1="52" x2="85" y2="52" stroke="#2C2416" stroke-width="0.8"></line>
+        <path d="M100,38 L110,20 L120,38" fill="none" stroke="#2C2416" stroke-width="1"></path>
+        <line x1="95" y1="43" x2="125" y2="43" stroke="#2C2416" stroke-width="0.8"></line>
+        <!-- Cross-hatching -->
+        <line x1="62" y1="60" x2="55" y2="70" stroke="#2C2416" stroke-width="0.6"></line>
+        <line x1="68" y1="60" x2="61" y2="70" stroke="#2C2416" stroke-width="0.6"></line>
+        <line x1="74" y1="60" x2="67" y2="70" stroke="#2C2416" stroke-width="0.6"></line>
+      </svg>
+
+      <div class="features-review-content">
+        <div class="features-review-quote-mark">“</div>
+        <h3 class="features-review-heading">A publication that respects the intelligence of its readers and the wildness of its subject matter</h3>
+        <p class="features-review-body">I've been a travel photographer for sixteen years, and I've seen dozens of adventure publications come and go — most of them chasing trends, filling pages with gear lists and lukewarm itineraries. KW Adventure Magazine is genuinely different. Each issue reads like a curated dispatch from somewhere real: the prose is unhurried, the photography is chosen for emotional weight rather than spectacle, and the editorial voice never condescends. As someone who spends months in the field, I trust this magazine to represent outdoor publishing with the honesty it deserves. My clients ask me which publications actually get it right. This is the one I hand them.</p>
+        <footer class="features-review-attribution">
+          <div class="features-review-attribution-line"></div>
+          <div class="features-review-attribution-text">
+            <strong class="features-review-author">Maren Holst</strong>
+            <span class="features-review-role">Expedition Photographer &amp; Contributing Partner</span>
+          </div>
+          <div class="features-review-stars">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          </div>
+        </footer>
+      </div>
+
+      <figure class="features-review-image-wrap">
+        <img loading="lazy" decoding="async" data-placeholder="features-reviews-image-1" data-context="Adventure photographer in rugged mountain terrain, natural film grain, warm golden hour light, reviewing prints or notes in a field journal, editorial documentary style, muted earthy tones, authentic outdoor atmosphere" width="600" height="400" src="/assets/site-features-reviews-image-1.webp" alt="Expedition photographer reviewing field notes in mountain terrain">
+        <!-- Botanical branch decoration -->
+        <svg class="features-review-branch-deco" data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 60 120" xmlns="http://www.w3.org/2000/svg">
+          <path d="M30,110 Q28,80 32,50 Q30,20 30,10" fill="none" stroke="#4A6741" stroke-width="1.5"></path>
+          <path d="M30,85 Q18,78 12,68" fill="none" stroke="#4A6741" stroke-width="1.2"></path>
+          <ellipse cx="10" cy="66" rx="5" ry="3" fill="none" stroke="#4A6741" stroke-width="1" transform="rotate(-20 10 66)"></ellipse>
+          <path d="M30,65 Q42,58 48,48" fill="none" stroke="#4A6741" stroke-width="1.2"></path>
+          <ellipse cx="50" cy="46" rx="5" ry="3" fill="none" stroke="#4A6741" stroke-width="1" transform="rotate(20 50 46)"></ellipse>
+          <path d="M30,45 Q20,38 16,28" fill="none" stroke="#4A6741" stroke-width="1.2"></path>
+          <ellipse cx="14" cy="26" rx="4" ry="2.5" fill="none" stroke="#4A6741" stroke-width="1" transform="rotate(-25 14 26)"></ellipse>
+        </svg>
+      </figure>
+    </article>
+
+    <!-- Review Panel 2 -->
+    <article class="features-review-panel features-review-panel--2">
+      <div class="features-review-content">
+        <div class="features-review-quote-mark">“</div>
+        <h3 class="features-review-heading">The kind of long-form adventure journalism that reminds you why you fell in love with the outdoors in the first place</h3>
+        <p class="features-review-body">Our outdoor education program has been recommending KW Adventure Magazine to students for three seasons now. What sets it apart from other online publishing platforms is its commitment to depth — stories that follow a journey from conception to completion, profiles that give voice to local guides and indigenous land stewards, and features that treat environmental complexity with the nuance it demands. The photography essays alone are worth the subscription: each sequence feels carefully sequenced, almost cinematic. Our students come back from the field with sharper eyes and better questions because of what they've read here. For anyone serious about adventure culture and responsible exploration, this magazine is essential reading.</p>
+        <footer class="features-review-attribution">
+          <div class="features-review-attribution-line"></div>
+          <div class="features-review-attribution-text">
+            <strong class="features-review-author">Tobias Wren</strong>
+            <span class="features-review-role">Director, Mountain School of Outdoor Arts</span>
+          </div>
+          <div class="features-review-stars">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          </div>
+        </footer>
+      </div>
+
+      <figure class="features-review-image-wrap features-review-image-wrap--right">
+        <img loading="lazy" decoding="async" data-placeholder="features-reviews-image-2" data-context="Outdoor education group studying a topographic map spread on a wooden table, adventure magazine issues visible, natural light through forest canopy, warm earthy tones, authentic documentary editorial photography style" width="600" height="400" src="/assets/site-features-reviews-image-2.webp" alt="Outdoor education group with adventure magazine and maps">
+      </figure>
+    </article>
+
+  </div>
+
+  <!-- Bottom notebook-page divider -->
+  <div class="features-reviews-divider-wrapper">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 1440 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Lower page (slightly turned) -->
+      <path d="M0,90 L0,58 Q120,48 240,54 T480,50 Q600,46 720,52 T960,48 Q1080,44 1200,50 T1440,52 L1440,90 Z" fill="#2C2416" opacity="0.6"></path>
+      <!-- Upper page -->
+      <path d="M0,90 L0,68 Q180,56 360,62 T720,58 Q900,54 1080,60 T1440,62 L1440,90 Z" fill="#2C2416"></path>
+    </svg>
+  </div>
+
+</section>
+
+<section class="features-cta-section" data-layout-spec="Features-cta">
+  <!-- Circular stamp badge decoration -->
+  <div class="features-cta-stamp-badge" aria-hidden="true">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg" width="90" height="90">
+      <circle cx="45" cy="45" r="40" fill="none" stroke="#4A6741" stroke-width="1.5" stroke-dasharray="3 4"></circle>
+      <circle cx="45" cy="45" r="33" fill="none" stroke="#4A6741" stroke-width="0.8"></circle>
+      <path d="M45 15 L47 21 L53 21 L48 25 L50 31 L45 27 L40 31 L42 25 L37 21 L43 21 Z" fill="#4A6741" opacity="0.6"></path>
+      <text font-family="Bree Serif, Lora, serif" font-size="6.2" fill="#4A6741" letter-spacing="2.5">
+        <textPath href="#stamp-circle-path">KW ADVENTURE · MAGAZINE · EXPLORE ·</textPath>
+      </text>
+      <defs>
+        <path id="stamp-circle-path" d="M45,45 m-29,0 a29,29 0 1,1 58,0 a29,29 0 1,1 -58,0"></path>
+      </defs>
+    </svg>
+  </div>
+
+  <!-- Faint paper grain overlay -->
+  <div class="features-cta-grain" aria-hidden="true"></div>
+
+  <div class="features-cta-container">
+    <!-- Terracotta accent rule -->
+    <div class="features-cta-rule" aria-hidden="true"></div>
+
+    <h2 class="features-cta-heading">Let's Tell the Next Story Together</h2>
+
+    <p class="features-cta-body">Whether you're a seasoned field writer, a brand aligned with the spirit of exploration, or a media partner looking to reach passionate adventurers — we'd love to hear from you. KW Adventure Magazine is always open to fresh voices, meaningful collaborations, and conversations that move the needle in publishing and media.</p>
+
+    <a href="/contact" class="features-cta-btn btn-primary">
+      <span>Get in Touch</span>
+      <svg data-element-type="icon" data-icon-type="svg" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+    </a>
+
+    <!-- Small tagline -->
+    <p class="features-cta-tagline">Contributors · Partnerships · Media Conversations</p>
+  </div>
+</section>
+  </main>
+  
+  <footer class="site-footer"> <div class="footer-top"> <div class="footer-container"> <div class="footer-grid"> <!-- Column 1: Company Info --> <div class="footer-col footer-brand"> <img src="/assets/kw-adventure-magazine-publishing-media-logo.webp" alt="KW Adventure Magazine" class="logo"> <p class="footer-tagline">Stories from the trail. Dispatches from the edge. Your essential guide to the world's great adventures.</p> <div class="footer-social">    </div> </div> <!-- Column 2: Quick Links --> <div class="footer-col"> <h3 class="footer-heading"><span class="heading-accent"></span>Explore</h3> <ul class="footer-links"> <li><a href="/">Home</a></li> <li><a href="/features">Features</a></li> <li><a href="/about">About</a></li> <li><a href="/contact">Contact</a></li> </ul> </div> <!-- Column 3: Contact --> <div class="footer-col"> <h3 class="footer-heading"><span class="heading-accent"></span>Get In Touch</h3> <ul class="footer-contact"> <li> <span class="contact-icon"><i class="fas fa-envelope"></i></span> <span class="contact-text"><a href="mailto:[business_email]">[business_email]</a></span> </li> <li> <span class="contact-icon"><i class="fas fa-phone"></i></span> <span class="contact-text"><a href="tel:[business_phone]">[business_phone]</a></span> </li> <li><a href="/"><span class="contact-icon"><i class="fas fa-map-marker-alt"></i></span> <span class="contact-text">[business_address]</span></a></li> </ul> </div> <!-- Column 4: Newsletter Teaser --> <div class="footer-col footer-newsletter"> <h3 class="footer-heading"><span class="heading-accent"></span>Field Notes</h3> <p class="footer-newsletter-text">Join our community of explorers. Get curated stories and adventure dispatches delivered to your inbox.</p> <a href="/contact" class="footer-cta-btn">Subscribe Now</a> <div class="footer-badge"> <i class="fas fa-compass"></i> <span>Weekly Adventure Reads</span> </div> </div> </div> </div> </div> <!-- Divider --> <div class="footer-divider-wrap"> <div class="footer-container"> <div class="footer-divider"></div> </div> </div> <!-- Bottom Bar --> <div class="footer-bottom"> <div class="footer-container"> <div class="footer-bottom-inner"> <p class="footer-copyright">© 2026 KW Adventure Magazine. All rights reserved.</p> <div class="footer-legal"> <a href="/privacy">Privacy Policy</a> <span class="legal-sep">·</span> <a href="/terms">Terms &amp; Conditions</a> <span class="legal-sep">·</span> <a href="/accessibility">Accessibility</a> <span class="legal-sep">·</span> <a href="https://zappy5.com" target="_blank" class="zappy-attribution">Generated by Zappy</a> </div> </div> </div> </div> </footer>
+  
+  <a href="https://wa.me/[whatsapp_handle]" class="whatsapp-float" aria-label="WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+  
+  <div data-integration="accessibility:toolbar"></div>
+
+    <script src="/script.js"></script>
+
+    <script id="zappy-mobile-submenu-script">
+    (function() {
+      function initMobileSubmenuToggles() {
+        if (window.innerWidth > 768) {
+          document.querySelectorAll('.mobile-submenu-toggle').forEach(function(btn) { btn.remove(); });
+          document.querySelectorAll('.sub-menu.mobile-expanded').forEach(function(menu) { menu.classList.remove('mobile-expanded'); });
+          return;
+        }
+        var items = document.querySelectorAll('.nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu)');
+        items.forEach(function(li) {
+          if (li.querySelector('.mobile-submenu-toggle')) return;
+          var submenu = li.querySelector('.sub-menu');
+          var parentLink = li.querySelector(':scope > a');
+          if (!submenu || !parentLink) return;
+          var toggleBtn = document.createElement('button');
+          toggleBtn.className = 'mobile-submenu-toggle';
+          toggleBtn.setAttribute('aria-label', 'Toggle submenu');
+          toggleBtn.setAttribute('type', 'button');
+          parentLink.insertAdjacentElement('afterend', toggleBtn);
+          toggleBtn.addEventListener('click', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            document.querySelectorAll('.sub-menu.mobile-expanded').forEach(function(menu) {
+              if (menu !== submenu) { menu.classList.remove('mobile-expanded'); var t = menu.parentElement.querySelector('.mobile-submenu-toggle'); if(t) t.classList.remove('expanded'); }
+            });
+            submenu.classList.toggle('mobile-expanded');
+            toggleBtn.classList.toggle('expanded');
+          });
+        });
+      }
+      if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initMobileSubmenuToggles); }
+      else { initMobileSubmenuToggles(); }
+      var resizeTimer; window.addEventListener('resize', function() { clearTimeout(resizeTimer); resizeTimer = setTimeout(initMobileSubmenuToggles, 250); });
+      // Re-initialize when mobile menu becomes visible (MutationObserver)
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'attributes') {
+            var target = mutation.target;
+            if (target.classList && (target.classList.contains('active') || target.classList.contains('open'))) {
+              setTimeout(initMobileSubmenuToggles, 100);
+            }
+          }
+        });
+      });
+      setTimeout(function() {
+        document.querySelectorAll('.mobile-menu, .nav-menu, #navMenu, nav').forEach(function(menu) {
+          observer.observe(menu, { attributes: true, attributeFilter: ['class', 'style'] });
+        });
+      }, 500);
+    })();
+    </script>
+</body>
+</html>
